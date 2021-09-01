@@ -23,10 +23,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="100"
                 android:hint="@string/hint_descripcion"
+                app:counterEnabled="true"
+                app:counterMaxLength="@integer/description_max_length"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etDescription"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:maxLength="@integer/description_max_length"
+                    android:inputType="textCapSentences"
+                    android:imeOptions="actionDone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
@@ -36,7 +42,7 @@
                 android:layout_marginStart="@dimen/common_padding_default"
                 android:src="@drawable/note_add"
                 android:background="?attr/selectableItemBackground"
-                app:tint="#F57C00" />
+                app:tint="@color/amber_200" />
 
         </LinearLayout>
 
