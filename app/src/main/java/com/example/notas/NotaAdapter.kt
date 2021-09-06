@@ -1,5 +1,6 @@
 package com.example.notas
 
+import android.content.Context
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +14,13 @@ import com.example.notas.databinding.ItemNotasBinding
 class NotaAdapter (var noteList: MutableList<Notas>, private val listener: OnClickListener):
     RecyclerView.Adapter<NotaAdapter.ViewHolder>() {
 
+    private lateinit var context: Context
+
     //METODOS OBLIGATORIOS DE IMPLEMENTAR DE LA RECYCLERVIEW.ADAPTER
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        context = parent.context
         //Aquí inflamos nuestra vista...
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_notas, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_notas, parent, false)
         // Retornamos la variable que nos exige el método
         return ViewHolder(view)
     }
@@ -34,9 +38,12 @@ class NotaAdapter (var noteList: MutableList<Notas>, private val listener: OnCli
         // Donde podemos modificar nuestra vista en tiempo real
         if(nota.isFinished){
             // Con esto cambiamos el tamaño de los textos si está seleccionada la nota
-            holder.binding.tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f) //nos pide un float por eso ponemos la f al final
+            //holder.binding.tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f) //nos pide un float por eso ponemos la f al final
+            holder.binding.tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                context.resources.getInteger(R.integer.description_size_finished).toFloat())
         }else{
-            holder.binding.tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            holder.binding.tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                context.resources.getInteger(R.integer.description_size_not_finished).toFloat())
         }
 
     }
@@ -64,10 +71,10 @@ class NotaAdapter (var noteList: MutableList<Notas>, private val listener: OnCli
         fun setListener(nota: Notas){
             binding.cbFinished.setOnClickListener {
                 nota.isFinished = (it as CheckBox).isChecked
-                notifyDataSetChanged()
+                listener.onChecked(nota)
             }
             binding.root.setOnLongClickListener {
-                listener.onLongClick(nota)
+                listener.onLongClick(nota, this@NotaAdapter )
                 true
             }
         }

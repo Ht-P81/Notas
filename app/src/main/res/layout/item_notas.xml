@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/listPreferredItemHeightSmall"
-    android:paddingHorizontal="@dimen/common_padding_default">
+    android:paddingHorizontal="@dimen/common_padding_default"
+    android:background="@drawable/background_item_note">
 
     <CheckBox
         android:id="@+id/cbFinished"

@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity(), OnClickListener{
     // Vinculamos nuestra vista con el recyclerview a el adaptador desde el main activity
     //Variable
     private lateinit var notaAdapter: NotaAdapter
+    private lateinit var notaTerminadaAdapter: NotaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,18 +22,19 @@ class MainActivity : AppCompatActivity(), OnClickListener{
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        //ArrayList mutableListOf de tipo objeto Notas (pasamos id1, descripcion)
-        val data = mutableListOf(Notas(1, "Estudiar"),
-        Notas(2, "Enviar mail"),
-        Notas(3, "Revisar el correo", true))
         // Lo inicializamos dentro del onCreate, dentro le pasaremos esa lista
-        notaAdapter = NotaAdapter(data, this)
-
+        notaAdapter = NotaAdapter(mutableListOf(), this)
         //Vinculamos nuestro adaptador con el recyclerview
-        binding.reyclerView.apply {
+        binding.rvNotas.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter=notaAdapter
+        }
+
+        notaTerminadaAdapter = NotaAdapter(mutableListOf(), this)
+        //Vinculamos nuestro adaptador con el recyclerview
+        binding.rvNotasTerminadas.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter=notaTerminadaAdapter
         }
 
         //Funcionalidad del botón agregar
@@ -54,28 +56,53 @@ class MainActivity : AppCompatActivity(), OnClickListener{
         }
     }
 
+    // Hacemos mandar a llamar la función getData
+    // un método de los del ciclo de vida, para cuando ejecute la app cargue el método que
+    // alimente los listados
+    override fun onStart() {
+        super.onStart()
+        getData()
+    }
+
+    // Metodo que reparte la información entre terminadas y pendientes
+    private fun getData(){
+        //ArrayList mutableListOf de tipo objeto Notas (pasamos id1, descripcion)
+        val data = mutableListOf(Notas(1, "Estudiar"),
+            Notas(2, "Enviar mail"),
+            Notas(3, "Revisar el correo", true))
+        data.forEach{ nota->
+            addNotesAuto(nota)
+        }
+    }
+
     private fun addNotesAuto(nota: Notas) {
-        notaAdapter.add(nota)
+        if(nota.isFinished){
+            notaTerminadaAdapter.add(nota)
+        }else notaAdapter.add(nota)
     }
 
     private fun deleteNoteAuto(nota: Notas) {
-        val builder= AlertDialog.Builder(this)
-            .setTitle(getString(R.string.dialog_title))
-            .setPositiveButton(getString(R.string.dialog_ok),{ dialogInterface, i->
-                notaAdapter.remove(nota)
-            })
-            .setNegativeButton(getString(R.string.dialog_cancel), null)
-
-        builder.create().show()
-
+        if(nota.isFinished){
+            notaAdapter.remove(nota)
+        }else{
+            notaTerminadaAdapter.remove(nota)
+        }
     }
 
     override fun onChecked(nota: Notas) {
-        TODO("Not yet implemented")
+        deleteNoteAuto(nota)
+        addNotesAuto(nota)
     }
 
-    override fun onLongClick(nota: Notas) {
-        deleteNoteAuto(nota)
+    override fun onLongClick(nota: Notas, currentAdapter: NotaAdapter) {
+        val builder= AlertDialog.Builder(this)
+            .setTitle(getString(R.string.dialog_title))
+            .setPositiveButton(getString(R.string.dialog_ok),{ dialogInterface, i->
+                currentAdapter.remove(nota)
+            })
+            .setNegativeButton(getString(R.string.dialog_cancel), null)
+        builder.create().show()
+
     }
 
 

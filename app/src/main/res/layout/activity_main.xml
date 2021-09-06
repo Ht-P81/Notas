@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/brown_50"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -46,13 +47,35 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notas_a_realizar"
+            android:gravity="center_vertical|center_horizontal"
+            android:textSize="16sp"
+            android:textAppearance="?attr/textAppearanceOverline"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/reyclerView"
+            android:id="@+id/rvNotas"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/item_notas"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notas_terminadas"
+            android:gravity="center_vertical|center_horizontal"
+            android:textSize="16sp"
+            android:textAppearance="?attr/textAppearanceOverline"/>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNotasTerminadas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/item_notas"/>
     </LinearLayout>
 
 </ScrollView>
