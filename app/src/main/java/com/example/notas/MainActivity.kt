@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.notas.Constants.PROPERTY_ID
 import com.example.notas.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 //Implementamos nuestra interfaz con comas y el nombre, en esta caso OnClickListener,
 //necesitamos implementar el método de la interfaz, en este caso, onLongClick
@@ -16,11 +18,17 @@ class MainActivity : AppCompatActivity(), OnClickListener{
     private lateinit var notaAdapter: NotaAdapter
     private lateinit var notaTerminadaAdapter: NotaAdapter
 
+    //Desde aquí creamos nuestra  variable de tipo base de datos luego en el onCreate la instanciamos
+    private lateinit var database: DatabaseHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Todas las vistas se inflan, se construyen en base a lo que hemos construido
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Instanciamos nuestra base de datos
+        database = DatabaseHelper(this)
 
         // Lo inicializamos dentro del onCreate, dentro le pasaremos esa lista
         notaAdapter = NotaAdapter(mutableListOf(), this)
@@ -43,15 +51,27 @@ class MainActivity : AppCompatActivity(), OnClickListener{
             if(binding.etDescription.text.toString().isNotBlank()){
                 // Creamos la variable de objeto tipo Notas
                     // Primer parámetro el número, el segundo el texto y por ultimo el booleano
-                val nota = Notas((notaAdapter.itemCount +1).toLong(),
-                    binding.etDescription.text.toString().trim())
-                //Agregamos la nota la adaptador desde un metodo nuevo
-                addNotesAuto(nota)
-                //Limpiamos el campo etDescription, si no está vacío (text?) que lo limpie
-                binding.etDescription.text?.clear()
-                //binding.etDescription.error = null
+                    /*val nota = Notas((notaAdapter.itemCount + 1).toLong(),
+                            binding.etDescription.text.toString().trim())
+                        addNotesAuto(nota)
+                        binding.etDescription.text?.clear()*/
+
+                val nota = Notas(description=binding.etDescription.text.toString().trim())
+                nota.id= database.insertNote(nota)
+                if(nota.id != -1L){
+                    //Agregamos la nota la adaptador desde un metodo nuevo
+                    addNotesAuto(nota)
+                    //Limpiamos el campo etDescription, si no está vacío (text?) que lo limpie
+                    binding.etDescription.text?.clear()
+                    Snackbar.make(binding.root, "Registrado", Snackbar.LENGTH_SHORT).show()
+                    //binding.etDescription.error = null
+                }else{
+                    Snackbar.make(binding.root, "Error al modificar la base de datos", Snackbar.LENGTH_SHORT).show()
+                }
+
             }else{
                 binding.etDescription.error = getString(R.string.validation_fieldrequired)
+
             }
         }
     }

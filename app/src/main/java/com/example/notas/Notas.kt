@@ -2,5 +2,7 @@ package com.example.notas
 
 import android.content.IntentSender
 
-data class Notas (var id: Long, var description:String = "", var isFinished: Boolean = false) {
+data class Notas (var id: Long=0,
+                  var description:String = "",
+                  var isFinished: Boolean = false) {
 }
