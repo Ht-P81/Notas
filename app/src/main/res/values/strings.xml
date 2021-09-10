@@ -7,4 +7,7 @@
     <string name="validation_fieldrequired">Campo requerido.</string>
     <string name="notas_a_realizar">A realizar:</string>
     <string name="notas_terminadas">Terminadas:</string>
+    <string name="message_write_databse_success">Registrado</string>
+    <string name="message_write_databse_error">Error al modificar la base de datos</string>
+    <string name="message_write_databse_eliminado">Nota borrada</string>
 </resources>

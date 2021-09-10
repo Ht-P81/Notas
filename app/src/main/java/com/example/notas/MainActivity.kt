@@ -58,15 +58,15 @@ class MainActivity : AppCompatActivity(), OnClickListener{
 
                 val nota = Notas(description=binding.etDescription.text.toString().trim())
                 nota.id= database.insertNote(nota)
-                if(nota.id != -1L){
+                if(nota.id != Constants.ID_ERROR){
                     //Agregamos la nota la adaptador desde un metodo nuevo
                     addNotesAuto(nota)
                     //Limpiamos el campo etDescription, si no está vacío (text?) que lo limpie
                     binding.etDescription.text?.clear()
-                    Snackbar.make(binding.root, "Registrado", Snackbar.LENGTH_SHORT).show()
+                    showMessage(R.string.message_write_databse_success)
                     //binding.etDescription.error = null
                 }else{
-                    Snackbar.make(binding.root, "Error al modificar la base de datos", Snackbar.LENGTH_SHORT).show()
+                    showMessage(R.string.message_write_databse_error)
                 }
 
             }else{
@@ -87,9 +87,11 @@ class MainActivity : AppCompatActivity(), OnClickListener{
     // Metodo que reparte la información entre terminadas y pendientes
     private fun getData(){
         //ArrayList mutableListOf de tipo objeto Notas (pasamos id1, descripcion)
-        val data = mutableListOf(Notas(1, "Estudiar"),
+        /*val data = mutableListOf(Notas(1, "Estudiar"),
             Notas(2, "Enviar mail"),
-            Notas(3, "Revisar el correo", true))
+            Notas(3, "Revisar el correo", true))*/
+
+        val data = database.getAllNotes()
         data.forEach{ nota->
             addNotesAuto(nota)
         }
@@ -110,19 +112,35 @@ class MainActivity : AppCompatActivity(), OnClickListener{
     }
 
     override fun onChecked(nota: Notas) {
-        deleteNoteAuto(nota)
-        addNotesAuto(nota)
+        if(database.updateNota(nota)){
+            deleteNoteAuto(nota)
+            addNotesAuto(nota)
+        }else{
+            showMessage(R.string.message_write_databse_error)
+        }
+
     }
 
     override fun onLongClick(nota: Notas, currentAdapter: NotaAdapter) {
         val builder= AlertDialog.Builder(this)
             .setTitle(getString(R.string.dialog_title))
             .setPositiveButton(getString(R.string.dialog_ok),{ dialogInterface, i->
-                currentAdapter.remove(nota)
+                if(database.deleteNote(nota)){
+                    currentAdapter.remove(nota)
+                    showMessage(R.string.message_write_databse_eliminado)
+                }else{
+                    showMessage(R.string.message_write_databse_error)
+                }
+
             })
             .setNegativeButton(getString(R.string.dialog_cancel), null)
         builder.create().show()
 
+    }
+
+    private fun showMessage(msgRes: Int){
+        Snackbar.make(binding.root, getString(msgRes),
+            Snackbar.LENGTH_SHORT).show()
     }
 
 
